@@ -189,19 +189,27 @@ Optional: `?k=yourpassword` logs in without a cookie. `?self=1` deletes the file
 ## FAQ / SSS
 
 **Does it work on shared hosting? / Paylaşımlı hostingde çalışır mı?**
+
 **EN** — File manager yes. Terminal and DB need at least one exec function.
+
 **TR** — Dosya yöneticisi evet. Terminal ve DB için en az bir exec fonksiyonu gerekir.
 
 **Why read-only directories? / Neden salt-okunur dizinler?**
+
 **EN** — The PHP pool user usually is not the account owner. Use the permission panel, or run through an elevated path if one exists.
+
 **TR** — PHP havuz kullanıcısı genelde hesap sahibi değildir. İzin panelini kullan veya yükseltilmiş bir yol varsa ondan geç.
 
 **Can it be detected? / Yakalanır mı?**
+
 **EN** — Yes. It is a plain PHP file; a WAF may block `shell_exec` output. The base64 POST parameter transport reduces signature hits but does not eliminate them.
+
 **TR** — Evet. Düz bir PHP dosyasıdır; WAF `shell_exec` çıktısını kesebilir. base64 POST taşıma imza isabetini azaltır ama sıfırlamaz.
 
 **Why no framework? / Neden framework yok?**
+
 **EN** — One file, zero dependencies, works on a locked-down host.
+
 **TR** — Tek dosya, sıfır bağımlılık, kilitli sunucuda da çalışır.
 
 ---
