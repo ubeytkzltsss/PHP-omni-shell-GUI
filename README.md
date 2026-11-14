@@ -218,7 +218,7 @@ omni-nix.php    Linux  — sh/bash, SUID/GTFOBins, cron, Plesk Linux
 ```
 ---
 
-<div align="center"><sub>Built for people who have FTP and five minutes.</sub></div>
+
 
 
 <p align="center">
@@ -228,3 +228,4 @@ omni-nix.php    Linux  — sh/bash, SUID/GTFOBins, cron, Plesk Linux
 <p align="center">
   Developed by <b>Ubeyt</b>.
 </p>
+<div align="center"><sub>Built for people who have FTP and five minutes.</sub></div>
