@@ -2,7 +2,7 @@
 
 ## ⚠️ Educational use / Eğitim amaçlı kullanım
 
-# php-omni-shell
+# PHP-omni-shell
 
 **Single-file PHP web shell with GUI — file manager, terminal, privesc helpers, DB extraction.**
 **Arayüzlü tek dosya PHP web shell — dosya yöneticisi, terminal, yetki yükseltme, veritabanı çekme.**
